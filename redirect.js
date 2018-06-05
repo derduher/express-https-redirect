@@ -7,7 +7,12 @@
  * @author Frank Hellwig <frank.hellwig@buchanan-edwards.com>
  */
 
-function middleware(redirectLocalhost) {
+function middleware(redirectLocalhost, isPermanent) {
+    var status = 302
+    if (isPermanent) {
+      status = 301
+    }
+
     return function(req, res, next) {
         if (req.hostname === 'localhost' && !redirectLocalhost) {
             return next();
@@ -18,7 +23,7 @@ function middleware(redirectLocalhost) {
         // Note that we do not keep the port as we are using req.hostname
         // and not req.headers.host. The port number does not really have
         // a meaning in most cloud deployments since they port forward.
-        res.redirect('https://' + req.hostname + req.originalUrl);
+        res.redirect(status, 'https://' + req.hostname + req.originalUrl);
     };
 };
 
